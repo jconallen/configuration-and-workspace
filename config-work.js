@@ -235,8 +235,12 @@ function animateArm() {
 function drawConfiguration() {
   for (var x = 0; x < canConfiguration.width; x++) {
     for (var y = 0; y < canConfiguration.height; y++) {
-      var s = ((x - canConfiguration.width / 2) * 2 * Math.PI) / canConfiguration.width;
-      var e = ((y - canConfiguration.height / 2) * 2 * Math.PI) / canConfiguration.height;
+      var s =
+        ((x - canConfiguration.width / 2) * 2 * Math.PI) /
+        canConfiguration.width;
+      var e =
+        ((y - canConfiguration.height / 2) * 2 * Math.PI) /
+        canConfiguration.height;
 
       var bs = arm(worldWidth / 2, 0, Math.PI / 2, baseLength, "black");
       var sh = arm(bs.x2, bs.y2, s, shoulderLength, "blue");
@@ -273,16 +277,15 @@ function drawConfiguration() {
 }
 
 function drawWorkspace() {
-    drawGridLines();
-    circle(worldWidth / 2, baseLength, shoulderLength, "lightgray");
+  drawGridLines();
+  circle(worldWidth / 2, baseLength, shoulderLength, "lightgray");
 }
 
 function drawGridLines() {
-
   var dx = canvasWidth / worldWidth;
   var dy = canvasHeight / worldHeight;
 
-  ctxWorkspace.strokeStyle = 'lightblue';
+  ctxWorkspace.strokeStyle = "lightblue";
   ctxWorkspace.lineWidth = 1;
 
   var ticks;
