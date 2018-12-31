@@ -4,6 +4,9 @@ with the direct manipulation of the visualizations in the browser.
 
 */
 
+
+// initialize the app.  set the global vars for the canvases and contexts.
+// set the widths of the canvases, and attach click listeners.
 function init() {
   canWorkspace = document.getElementById("workspace");
   canWorkspace.width = canvasWidth;
@@ -39,17 +42,20 @@ function init() {
   v.addEventListener("click", adjustElbowLength);
   v.width = 200;
 
-  animateArm();
+  drawArm();
   drawConfiguration();
 }
 
+// reset the length of the base segment.  This means 
+// updating the global var (baseLength) and re-draw it
+// in the workpace.
 function adjustBaseLength(event) {
   var canvas = document.getElementById("baseLenCanvas");
   var pos = getMousePos(canvas, event);
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   baseLength = Math.round(l * 10) / 10;
-  animateArm();
+  drawArm();
   drawConfiguration();
 }
 
@@ -59,7 +65,7 @@ function adjustShoulderLength(event) {
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   shoulderLength = Math.round(l * 10) / 10;
-  animateArm();
+  drawArm();
   drawConfiguration();
 }
 
@@ -69,7 +75,7 @@ function adjustElbowLength(event) {
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   elbowLength = Math.round(l * 10) / 10;
-  animateArm();
+  drawArm();
   drawConfiguration();
 }
 
@@ -139,7 +145,7 @@ function controlClick(event) {
     elbowAngle = theta;
     drawControl(canvas, theta, "green", "Elbow");
   }
-  animateArm();
+  drawArm();
 }
 
 function drawControl(canvas, theta, color, name) {
@@ -182,7 +188,7 @@ function reset() {
   deltaElbowAngle = 0.1;
   deltaElbowDirection = 1;
   blocks = [];
-  animateArm();
+  drawArm();
   drawConfiguration();
 }
 
@@ -329,10 +335,10 @@ function drawNext() {
     shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
   }
 
-  animateArm();
+  drawArm();
 }
 
-function animateArm() {
+function drawArm() {
   ctxWorkspace.clearRect(0, 0, canWorkspace.width, canWorkspace.height);
   drawWorkspace();
   // put in blocks

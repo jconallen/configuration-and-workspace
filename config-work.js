@@ -4,11 +4,12 @@ Robot manipulation functions (mostly)
 
 */
 
-function arm(wx, wy, angle, len) {
-  var x1 = wx;
-  var y1 = wy;
-  var dx = Math.cos(angle) * len;
-  var dy = Math.sin(angle) * len;
+// returns a line segment in wrold units that represents
+// the arm starting at (wx, wy) with length and angle from 
+// the positive horizontal
+function arm(x1, y1, theta, len) {
+  var dx = Math.cos(theta) * len;
+  var dy = Math.sin(theta) * len;
   var x2 = wx + dx;
   var y2 = wy + dy;
   return { x1: wx, y1: wy, x2: wx + dx, y2: wy + dy };
@@ -27,6 +28,8 @@ function intersects(a, b, c, d, p, q, r, s) {
   }
 }
 
+// returns true if any of the boxes (obstacles) in the workspace
+// intersects with line segment
 function hitAnyBlock(segment) {
   for (var b = 0; b < blocks.length; b++) {
     if (hitBlock(segment, b)) return true;
@@ -34,6 +37,8 @@ function hitAnyBlock(segment) {
   return false;
 }
 
+// returns true if the line segment intersects with any of the 
+// box's line segments.
 function hitBlock(segment, b) {
   var block = blocks[b];
   var bottom = intersects(
@@ -79,6 +84,8 @@ function hitBlock(segment, b) {
   return bottom | top | left | right;
 }
 
+// returns true if the line segment intersects with any of the 
+// the workspace's walls, floor or ceiling.
 function hitWall(segment) {
   var left = segment.x2 <= 0;
   var right = segment.x2 >= worldWidth;
