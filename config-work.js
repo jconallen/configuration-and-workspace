@@ -52,7 +52,7 @@ function hitBlock(segment, b) {
     segment.x2,
     segment.y2,
     block.x1,
-    block.y1,
+    block.y2,
     block.x2,
     block.y2
   );
