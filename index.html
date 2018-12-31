@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>25 Robotics</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"
+      async
+    ></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 col-sm-12">
+          <h1>Robotics</h1>
+          <h3>Configuration Space and Workspace</h3>
+          <p>
+            We are given a robot arm (Figure 25.14a in the text) with two joints
+            that move independently, and both are capable of swinging a full 360
+            degrees. It operates in a fixed sized box. It is mounted on a
+            vertical base center of the bottom of the box. The segments of the
+            arm are; the fixed base (black), a shoulder segment (blue), and an
+            elbow segment (green).
+          </p>
+          <p>
+            When the joints move they alter the positions of the arm segments in
+            a cartesian coordinate sytem. This is displayed in a
+            <b>workspace</b> representation. Assuming the base segment is fixed,
+            the robot's configuration can be described by a four-dimensional
+            coordinate: \((x_e, y_e)\) for the location of the elbow relative to
+            the environment and \((x_g, y_g)\) for the location of the gripper,
+            or end of the elbow segment.
+          </p>
+          <p>
+            Not all workspace coordinates are actually attainable (even without
+            obstacles). For example in the default configuration the arm is
+            stopped from goping beyond the floor of the box. When obstacles are
+            added to workspace world, the arm has additional areas where it
+            cannot reach.
+          </p>
+          <p>
+            When planning motions for the robot it is easier to use a
+            <b>configuration space</b> representation. In this representation
+            the state space is continuous. We represent the state with two
+            angles; elbow \(\varphi_e\), and shoulder \(\varphi_s\).
+          </p>
+          <p>
+            This visualization allows you to add obstacles to the
+            <b>workspace</b> representation, by simply clicking on a cell in the
+            workspace (turning it dark gray). When you do the
+            <b>configuration space</b> is updated with regions that the arm can
+            not access. Red areas indicate that the arm is up against the
+            boundaries of the containing box. Blue indicates that the shoulder
+            segment is prevented from orienting itself at that angle
+            (\(\varphi_s\)). Green indicates that the elbow segment of the arm
+            is prevented from orienting itself at that angle (\(\varphi_e\)).
+          </p>
+
+          <p>
+            You can manually position the two joints with the shoulder and elbow
+            contols (click in the circle to orient the joint). You can also
+            alter the lengths of the segments (including the base), by clicking
+            on those controls.
+          </p>
+          <p>
+            You can animate movement of the arm with the start and end buttons.
+            This animation is not garanteed to reach all possible
+            configurations. Depending on how the obstacles are arranged it may
+            not be possible to the arm to get on either side of it. So initial
+            positioning of the arm can significantly affect the ability of the
+            animation to reach a given configuration.
+          </p>
+          <p>
+            Finally, pressing the <b>Locate in Configuration Space</b> button
+            will place a black dot at the current configuration of the arm
+            (animations should be stopped to do this).
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <h3>Workspace</h3>
+        <div class="col-md-5">
+          <div>
+            <canvas id="workspace" style="border:1px solid #000000;">
+              This text is displayed if your browser does not support HTML5
+              Canvas.
+            </canvas>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <canvas
+            id="shoulderControl"
+            style="border:1px solid #000000;"
+          ></canvas>
+          <canvas id="elbowControl" style="border:1px solid #000000;"></canvas>
+          <p>
+            Base Length: <span id="baseLenField">3.0</span>
+            <canvas
+              id="baseLenCanvas"
+              style="border:1px solid #000000;"
+              height="15"
+            ></canvas>
+          </p>
+          <p>
+            Shoulder Length: <span id="shoulderLenField">3.0</span>
+            <canvas
+              id="shoulderLenCanvas"
+              style="border:1px solid #000000;"
+              height="15"
+            ></canvas>
+          </p>
+          <p>
+            Elbow Length: <span id="elbowLenField" Control>3.0</span>
+            <canvas
+              id="elbowLenCanvas"
+              style="border:1px solid #000000;"
+              height="15"
+            ></canvas>
+          </p>
+          <p>
+            <button class="btn btn-primary" id="start" onclick="start()">
+              Start</button
+            >&nbsp;
+            <button class="btn btn-danger" id="stop" onclick="stop()">
+              Stop</button
+            >&nbsp;
+            <button class="btn btn-success" id="reset" onclick="reset()">
+              Reset
+            </button>
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <h3>Configuration Space</h3>
+        <div class="col-md-6">
+          <div>
+            <canvas id="configuration-space" style="border: 1px solid #000000;"></canvas>
+            <p>
+              <button class="btn btn-warning" id="start" onclick="drawConfiguration()">
+                Locate in Configuration Space
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <footer><small>&copy; Copyright 2019, jim conallen</small></footer>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // initialization vars and constants
+
+      var globalId; // handle for animation using requestAnimationFrame
+
+      var canWorkspace; // workspace canvas
+      var ctxWorkspace; // workspace 2d context
+
+      var canConfiguration; // configuration canvas
+      var ctxConfiguration; // configuration 2d context
+
+      var canShoulder; // shoulder control canvas
+      var ctxShoulder; // shoulder control 2d context
+
+      var canElbow; // elbow control canvas
+      var ctxElbow; // elbow control 2d context
+
+      const worldWidth = 12; // box width in workspace units
+      const worldHeight = 10; // box height in workspace units
+      var canvasWidth = 30 * worldWidth; // width in pixels of workspace canvas
+      var canvasHeight = 30 * worldHeight; // height in pixels of workspace canvas
+
+      const baseColor = "black"; // color of base segment
+      const shoulderColor = "blue"; // color of shoulder segment
+      const elbowColor = "green"; // color of elbow segment
+
+      // initial robot arm state
+      var baseLength = 4; // height of arm base in world units
+
+      var elbowAngle = 0; // initial angle of elbow joint
+      var elbowLength = 3; // length of elbow segment
+      var deltaElbowAngle = 0.1; // change in elbow angle (radians -pi to pi) during each tick of animation
+      var deltaElbowDirection = 1; // direction of angle increment (+1 or -1).
+
+      var shoulderAngle = 0; // initial angle of shoulder joint
+      var shoulderLength = 2; // length of shoulder segment
+      var deltaShoulderAngle = 0.01; // change in shoulder angle (radians -pi to pi) during each tick of animation
+      var deltaShoulderDirection = 1; // direction of angle increment (+1 or -1).
+
+      var blocks = []; // array of blocks defined by the user in the workspace
+      // each block is a rectangular object defined in world units
+    </script>
+    <script src="config-work.js"></script>
+    <script src="c_config-work.js"></script>
+    <script type="text/javascript">
+      init();
+    </script>
+  </body>
+  <!-- Copyright 2019 jim conallen, jconallen@acm.org -->
+</html>
