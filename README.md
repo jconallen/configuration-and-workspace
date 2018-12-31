@@ -7,5 +7,7 @@ This visualization was originaly created as an independent study option for an A
 
 The structure of this project and code is oriented to the aima-javascript guidelines.
 
+You can try it out in your own browser here: [Configuration Spaces and Workspaces](https://jconallen.github.io/configuration-and-workspace/).
+
 
 *Copyright 2019, jim conallen, jconallen@acm.org*
