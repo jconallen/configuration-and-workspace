@@ -4,14 +4,13 @@ with the direct manipulation of the visualizations in the browser.
 
 */
 
-
 // initialize the app.  set the global vars for the canvases and contexts.
 // set the widths of the canvases, and attach click listeners.
 function init() {
   canWorkspace = document.getElementById("workspace");
   canWorkspace.width = canvasWidth;
   canWorkspace.height = canvasHeight;
-  canWorkspace.addEventListener("click", clicked, false);
+  canWorkspace.addEventListener("click", clickedWorkspace, false);
 
   ctxWorkspace = canWorkspace.getContext("2d");
 
@@ -42,9 +41,50 @@ function init() {
   v.addEventListener("click", adjustElbowLength);
   v.width = 200;
 
-  drawArm();
+  drawWorkspace();
   drawConfiguration();
 }
+
+
+// begins animation by requesting a animation frame, which calls the animate function
+// at regiular intervals.  The handle is kept in the globalId var so that it can be stopped 
+// by the user via the stop button.
+function start() {
+  globalID = requestAnimationFrame(animate);
+}
+
+// stops the currently running animation.
+function stop() {
+  cancelAnimationFrame(globalID);
+}
+
+// update the workspace view with the next pose of robot 
+// in the workspace view
+function animate() {
+  drawNext();
+  globalID = requestAnimationFrame(animate);
+}
+
+
+// resets the arm variables (joint and lengths), and removes 
+// any obstacles from the workspace.
+function reset() {
+  shoulderAngle = 0;
+  shoulderLength = 2;
+  deltaShoulderAngle = 0.01; 
+  deltaShoulderDirection = 1;
+
+  elbowAngle = 0;
+  elbowLength = 3;
+  deltaElbowAngle = 0.1;
+  deltaElbowDirection = 1;
+
+  blocks = [];
+
+  drawWorkspace();
+  drawConfiguration();
+}
+
 
 // reset the length of the base segment.  This means 
 // updating the global var (baseLength) and re-draw it
@@ -55,30 +95,38 @@ function adjustBaseLength(event) {
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   baseLength = Math.round(l * 10) / 10;
-  drawArm();
+  drawWorkspace();
   drawConfiguration();
 }
 
+// change the length of the shoulder segment of the arm
+// get the value from the control canvas then redraw the 
+// the arm and update the configuration view
 function adjustShoulderLength(event) {
   var canvas = document.getElementById("shoulderLenCanvas");
   var pos = getMousePos(canvas, event);
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   shoulderLength = Math.round(l * 10) / 10;
-  drawArm();
+  drawWorkspace();
   drawConfiguration();
 }
 
+// change the length of the elbow segment of the arm
+// get the value from the control canvas then redraw the 
+// the arm and update the configuration view
 function adjustElbowLength(event) {
   var canvas = document.getElementById("elbowLenCanvas");
   var pos = getMousePos(canvas, event);
   var width = this.width;
   var l = (pos.x / width) * 5 + 1;
   elbowLength = Math.round(l * 10) / 10;
-  drawArm();
+  drawWorkspace();
   drawConfiguration();
 }
 
+// draw the all the controls (shoulder and elbow joint, and the three length
+// controls for base, shoulder, and elbow segment 
 function drawControls() {
   drawControl(canShoulder, shoulderAngle, "blue", "Shoulder");
   drawControl(canElbow, elbowAngle, "green", "Elbow");
@@ -118,25 +166,32 @@ function drawControls() {
   ctx.restore();
 }
 
+// convert absolute mouse click location to relative coordinates. 
+// Returns a JSON object with the (x,y) coordinates
+// in pixels relative to the client area of the canvas.
 function getMousePos(canvas, event) {
   var rect = canvas.getBoundingClientRect();
-  return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  return { "x": event.clientX - rect.left, "y": event.clientY - rect.top };
 }
 
+// handle click event in one of the angle controls.
+// This function violates one design goal, by embedding the name 
+// of the controls in this function.  Hopefully future refactoring will
+// get rid of this (without just simply duplicating the code for each contol).
 function controlClick(event) {
   var canvas = event.currentTarget;
   var pos = getMousePos(canvas, event);
 
-  var ax1 = this.width / 2;
-  var ay1 = this.height / 2;
-  var ax2 = pos.x;
-  var ay2 = pos.y;
+  var a_x1 = this.width / 2;
+  var a_y1 = this.height / 2;
+  var a_x2 = pos.x;
+  var a_y2 = pos.y;
 
-  var adx = ax2 - ax1;
-  var ady = ay2 - ay1;
-  var bdx = this.width;
-  var bdy = ay1 - ax1;
-  var theta = Math.atan2(adx * bdy - ady * bdx, adx * bdx + ady * bdy);
+  var a_dx = a_x2 - a_x1;
+  var a_dy = a_y2 - a_y1;
+  var b_dx = this.width;
+  var b_dy = a_y1 - a_x1;
+  var theta = Math.atan2(a_dx * b_dy - a_dy * b_dx, a_dx * b_dx + a_dy * b_dy);
 
   if (canvas.id == "shoulderControl") {
     shoulderAngle = theta;
@@ -145,9 +200,10 @@ function controlClick(event) {
     elbowAngle = theta;
     drawControl(canvas, theta, "green", "Elbow");
   }
-  drawArm();
+  drawWorkspace();
 }
 
+// draws one of thge angle controls.
 function drawControl(canvas, theta, color, name) {
   var ctx = canvas.getContext("2d");
 
@@ -174,68 +230,60 @@ function drawControl(canvas, theta, color, name) {
   ctx.restore();
 }
 
-function start() {
-  globalID = requestAnimationFrame(animate);
-}
-
-function stop() {
-  cancelAnimationFrame(globalID);
-}
-
-function reset() {
-  elbowAngle = 0;
-  shoulderAngle = 0;
-  deltaElbowAngle = 0.1;
-  deltaElbowDirection = 1;
-  blocks = [];
-  drawArm();
-  drawConfiguration();
-}
-
-function clicked(event) {
+// user clicked in workspace.  This will place a block (obstacle) in the 
+// grid location that the user clicked in.
+function clickedWorkspace(event) {
   var rect = canWorkspace.getBoundingClientRect();
   var cx1 = event.clientX - rect.left;
   var cy1 = event.clientY - rect.top;
   var wx1 = Math.floor(_wx(cx1));
   var wy1 = Math.floor(_wy(cy1));
 
-  var block = _block(wx1, wy1);
+  var block = drawBlock(wx1, wy1);
   // now remember it in the world model
-  var block = { x1: wx1, y1: wy1, x2: wx1 + 1, y2: wy1 + 1 };
+  var block = { "x1": wx1, "y1": wy1, "x2": wx1 + 1, "y2": wy1 + 1 };
 
   var l = blocks.length;
-  var b;
-  for (b = 0; b < l; b++) {
-    if (wx1 == b.x1 && wx2 == b.x2 && wy1 == b.y1 && wy2 == b.y2) {
+  var i;
+  for (i = 0; i < l; i++) {
+    var b = blocks[i];
+    if (wx1 == b.x1 && (wx1+1) == b.x2 && wy1 == b.y1 && (wy1+1) == b.y2) {
       // already here - remove it (toggle effect)
-      blocks = blocks.splice(b, 1);
+      blocks.splice(i, 1);
+      break;
     }
   }
-  if (b == l) {
+  if (i >= l) {
     blocks.push(block);
   }
 
-  // update plot
+  // update 
+  drawWorkspace();
   drawConfiguration();
 }
 
+// convert world x coordinates to canvas coordinates (pixels) 
 function _cx(wrX) {
   return (wrX * canvasWidth) / worldWidth;
 }
 
+// convert world y coordinates to canvas coordinates (pixels) 
 function _cy(wrY) {
   return canvasHeight - (wrY * canvasHeight) / worldHeight;
 }
 
+// convert canvas x coordinates (pixels) to world coordinates
 function _wx(cvX) {
   return (cvX * worldWidth) / canvasWidth;
 }
 
+// convert canvas y coordinates (pixels) to world coordinates
 function _wy(cvY) {
   return (worldHeight * (canvasHeight - cvY)) / canvasHeight;
 }
 
-function _block(wx, wy) {
+// draws a block (obsrtacle in the workspace with world coordinates)
+function drawBlock(wx, wy) {
   var x1 = _cx(wx);
   var y1 = _cy(wy);
   var w = canvasWidth / worldWidth;
@@ -246,17 +294,7 @@ function _block(wx, wy) {
   ctxWorkspace.restore();
 }
 
-function rectangle(p1x, p1y, p2x, p2y, color) {
-  ctxWorkspace.save();
-  ctxWorkspace.strokeStyle = color;
-  var x1 = _cx(p1x);
-  var y1 = _cy(p1y);
-  var w = _cx(p2x) - x1;
-  var h = _cy(p2y) - y1;
-  ctxWorkspace.strokeRect(x1, y1, w, h);
-  ctxWorkspace.restore();
-}
-
+// draws a circle in workspace view in world coordinates
 function circle(wx, wy, wr, color) {
   ctxWorkspace.save();
   ctxWorkspace.beginPath();
@@ -269,34 +307,9 @@ function circle(wx, wy, wr, color) {
   ctxWorkspace.restore();
 }
 
-function line(px1, py1, px2, py2, color) {
-  var x1 = _cx(px1);
-  var y1 = _cy(py1);
-  var x2 = _cx(px2);
-  var y2 = _cy(py2);
-  ctxWorkspace.save();
-  ctxWorkspace.strokeStyle = color;
-  ctxWorkspace.beginPath();
-  ctxWorkspace.moveTo(x1, y1);
-  ctxWorkspace.lineTo(x2, y2);
-  ctxWorkspace.stroke();
-  ctxWorkspace.restore();
-}
 
-function point(wx, wy, color) {
-  ctxWorkspace.save();
-  ctxWorkspace.beginPath();
-  var x = _cx(wx);
-  var y = _cy(wy);
-  ctxWorkspace.strokeStyle = color;
-  ctxWorkspace.fillStyle = color;
-  ctxWorkspace.arc(x, y, 2, 0, 2 * Math.PI, false);
-  ctxWorkspace.fill();
-  ctxWorkspace.stroke();
-  ctxWorkspace.restore();
-}
-
-function drawArm(a, color) {
+// draws one segment of an arm (and puts a red dot at the end)
+function drawArmSegment(a, color) {
   var cx1 = _cx(a.x1);
   var cy1 = _cy(a.y1);
   var cx2 = _cx(a.x2);
@@ -318,33 +331,21 @@ function drawArm(a, color) {
   ctxWorkspace.stroke();
 }
 
-function animate() {
-  drawNext();
-  globalID = requestAnimationFrame(animate);
-}
-
+// draws the frame in the workspace animation.
 function drawNext() {
-  if (elbowAngle > Math.PI * 2) {
-    elbowAngle = 0;
-  } else {
-    elbowAngle = elbowAngle + deltaElbowDirection * deltaElbowAngle;
-  }
-  if (shoulderAngle > Math.PI * 2) {
-    shoulderAngle = 0;
-  } else {
-    shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
-  }
-
-  drawArm();
+  updateWorkspace();  // update the current state of the robot arm.
+  drawWorkspace();    // redraw
 }
 
-function drawArm() {
+// draws the workspace view based on the current robot pose and 
+// obstacles.
+function drawWorkspace() {
   ctxWorkspace.clearRect(0, 0, canWorkspace.width, canWorkspace.height);
-  drawWorkspace();
+  drawWorkspaceGrid();
   // put in blocks
   for (b = 0; b < blocks.length; b++) {
     var block = blocks[b];
-    _block(block.x1, block.y1);
+    drawBlock(block.x1, block.y1);
   }
 
   var bs = arm(worldWidth / 2, 0, Math.PI / 2, baseLength);
@@ -364,12 +365,14 @@ function drawArm() {
     sh = arm(bs.x2, bs.y2, shoulderAngle, shoulderLength);
   }
 
-  drawArm(bs, "black");
-  drawArm(sh, "blue");
-  drawArm(el, "green");
+  drawArmSegment(bs, "black");
+  drawArmSegment(sh, "blue");
+  drawArmSegment(el, "green");
   drawControls();
 }
 
+// draws the configuration  view based on the current robot pose (positions)
+// of the two joints, and locations of obstacles.
 function drawConfiguration() {
   for (var x = 0; x < canConfiguration.width; x++) {
     for (var y = 0; y < canConfiguration.height; y++) {
@@ -386,7 +389,7 @@ function drawConfiguration() {
 
       var color = "lightgray";
       if (hitWall(el)) {
-        color = "red";
+        color = "black";
       } else if (hitAnyBlock(sh)) {
         color = "blue";
       } else if (hitAnyBlock(el)) {
@@ -406,19 +409,22 @@ function drawConfiguration() {
   var x = (canConfiguration.width * (shoulderAngle + Math.PI)) / (2 * Math.PI);
   var y = (canConfiguration.height * (elbowAngle + Math.PI)) / (2 * Math.PI);
 
-  ctxConfiguration.strokeStyle = "black";
-  ctxConfiguration.fillStyle = "black";
-  ctxConfiguration.arc(x, y, 2, 0, 2 * Math.PI, false);
-  ctxConfiguration.fill();
+  ctxConfiguration.strokeStyle = "red";
+  ctxConfiguration.moveTo(x-5, y);
+  ctxConfiguration.lineTo(x+5, y);
+  ctxConfiguration.moveTo(x, y-5);
+  ctxConfiguration.lineTo(x, y+5);
   ctxConfiguration.stroke();
   ctxConfiguration.restore();
 }
 
-function drawWorkspace() {
+// draw the gridlines and shoulder circle in the workspace view
+function drawWorkspaceGrid() {
   drawGridLines();
   circle(worldWidth / 2, baseLength, shoulderLength, "lightgray");
 }
 
+// draw the gridlines in the workspace view
 function drawGridLines() {
   var dx = canvasWidth / worldWidth;
   var dy = canvasHeight / worldHeight;

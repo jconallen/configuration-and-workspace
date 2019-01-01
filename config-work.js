@@ -4,15 +4,29 @@ Robot manipulation functions (mostly)
 
 */
 
+// compute the next position of the robot arm.  Update the global vars.
+function updateWorkspace(){
+  if (elbowAngle > Math.PI * 2) {
+    elbowAngle = 0;
+  } else {
+    elbowAngle = elbowAngle + deltaElbowDirection * deltaElbowAngle;
+  }
+  if (shoulderAngle > Math.PI * 2) {
+    shoulderAngle = 0;
+  } else {
+    shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
+  }
+}
+
 // returns a line segment in wrold units that represents
 // the arm starting at (wx, wy) with length and angle from 
 // the positive horizontal
 function arm(x1, y1, theta, len) {
   var dx = Math.cos(theta) * len;
   var dy = Math.sin(theta) * len;
-  var x2 = wx + dx;
-  var y2 = wy + dy;
-  return { x1: wx, y1: wy, x2: wx + dx, y2: wy + dy };
+  var x2 = x1 + dx;
+  var y2 = y1 + dy;
+  return { "x1": x1, "y1": y1, "x2": x1 + dx, "y2": y1 + dy };
 }
 
 // returns true iff the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
