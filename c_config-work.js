@@ -56,6 +56,7 @@ function start() {
 // stops the currently running animation.
 function stop() {
   cancelAnimationFrame(globalID);
+  drawConfiguration();
 }
 
 // update the workspace view with the next pose of robot 
@@ -201,6 +202,7 @@ function controlClick(event) {
     drawControl(canvas, theta, "green", "Elbow");
   }
   drawWorkspace();
+  drawConfiguration();
 }
 
 // draws one of thge angle controls.
@@ -408,6 +410,9 @@ function drawConfiguration() {
   ctxConfiguration.beginPath();
   var x = (canConfiguration.width * (shoulderAngle + Math.PI)) / (2 * Math.PI);
   var y = (canConfiguration.height * (elbowAngle + Math.PI)) / (2 * Math.PI);
+  // var x = canConfiguration.width * ((shoulderAngle-Math.PI) / Math.PI + 1) / 2 ;
+  // var y = canConfiguration.height * ((elbowAngle-Math.PI) / Math.PI + 1 ) / 2;
+  console.log('s='+shoulderAngle.toFixed(1)+' e='+elbowAngle.toFixed(1)+' ('+x+','+y+')');
 
   ctxConfiguration.strokeStyle = "red";
   ctxConfiguration.moveTo(x-5, y);

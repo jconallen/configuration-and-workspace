@@ -6,15 +6,18 @@ Robot manipulation functions (mostly)
 
 // compute the next position of the robot arm.  Update the global vars.
 function updateWorkspace(){
-  if (elbowAngle > Math.PI * 2) {
-    elbowAngle = 0;
-  } else {
-    elbowAngle = elbowAngle + deltaElbowDirection * deltaElbowAngle;
+  elbowAngle = elbowAngle + deltaElbowDirection * deltaElbowAngle;
+  if (elbowAngle > Math.PI ) {
+    elbowAngle = elbowAngle - 2*Math.PI;
+  } else if( elbowAngle < -Math.PI ) {
+    elbowAngle = elbowAngle + 2*Math.PI;
   }
-  if (shoulderAngle > Math.PI * 2) {
-    shoulderAngle = 0;
-  } else {
-    shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
+
+  shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
+  if (shoulderAngle > Math.PI) {
+    shoulderAngle = shoulderAngle - 2*Math.PI;
+  } else if( shoulderAngle < -Math.PI ) {
+    shoulderAngle = shoulderAngle + 2*Math.PI;
   }
 }
 
