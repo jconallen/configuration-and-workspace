@@ -15,7 +15,7 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <h1>Chapter 25. Robotics</h1>
           <h3>Configuration Space and Workspace</h3>
           <p>
@@ -80,22 +80,66 @@
 
       <div class="row">
         <h3>Workspace</h3>
-        <div class="col-md-5">
+        <div class="col-md-4"  style="min-width: 400px;">
           <div>
-            <canvas id="workspace" style="border:1px solid #000000;">
-              This text is displayed if your browser does not support HTML5
-              Canvas.
-            </canvas>
+            <table>
+              <tr>
+                <td style="text-align: left;">\(y\)<td>
+                <td>
+                  <table>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">10</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">9</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">8</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">7</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">6</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">5</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">4</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">3</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">2</td></tr>
+                    <tr style="height: 30px;"><td style="vertical-align: top;">1</td></tr>
+                  </table>
+                </td>
+                <td colspan="12">            
+                  <canvas id="workspace" style="border:1px solid #000000;">
+                    This text is displayed if your browser does not support HTML5
+                    Canvas.
+                  </canvas>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align: right; width: 60px;" colspan="3"></td>
+                <td style="text-align: right; width: 30px;">1</td>
+                <td style="text-align: right; width: 30px;">2</td>
+                <td style="text-align: right; width: 30px;">3</td>
+                <td style="text-align: right; width: 30px;">4</td>
+                <td style="text-align: right; width: 30px;">5</td>
+                <td style="text-align: right; width: 30px;">6</td>
+                <td style="text-align: right; width: 30px;">7</td>
+                <td style="text-align: right; width: 30px;">8</td>
+                <td style="text-align: right; width: 30px;">9</td>
+                <td style="text-align: right; width: 30px;">10</td>
+                <td style="text-align: right; width: 30px;">11</td>
+                <td style="text-align: right; width: 30px;">12</td>
+              </tr>
+              <tr>
+                  <td colspan="15" style="text-align: center;">\(x\)</td>
+              </tr>
+
+            </table>
+
+
+
+
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <canvas
             id="shoulderControl"
             style="border:1px solid #000000;"
           ></canvas>
           <canvas id="elbowControl" style="border:1px solid #000000;"></canvas>
           <p>
-            Base Length: <span id="baseLenField">3.0</span>
+            Base Length: <span id="baseLenField">3.0</span></br>
             <canvas
               id="baseLenCanvas"
               style="border:1px solid #000000;"
@@ -103,7 +147,7 @@
             ></canvas>
           </p>
           <p>
-            Shoulder Length: <span id="shoulderLenField">3.0</span>
+            Shoulder Length: <span id="shoulderLenField">3.0</span></br>
             <canvas
               id="shoulderLenCanvas"
               style="border:1px solid #000000;"
@@ -111,7 +155,7 @@
             ></canvas>
           </p>
           <p>
-            Elbow Length: <span id="elbowLenField" Control>3.0</span>
+            Elbow Length: <span id="elbowLenField" Control>3.0</span></br>
             <canvas
               id="elbowLenCanvas"
               style="border:1px solid #000000;"
@@ -135,14 +179,46 @@
         <h3>Configuration Space</h3>
         <div class="col-md-6">
           <div>
-            <canvas
-              id="configuration-space"
-              style="border: 1px solid #000000;"
-            ></canvas>
+            <table>
+                <tr>
+                  <td>\(\varphi_e\)</td>
+                  <td>
+                    <table>
+                      <tr style="height: 100px;">
+                        <td style="vertical-align: top;">-\(\pi\)</td>
+                      </tr>
+                      <tr style="height: 100px;">
+                          <td style="vertical-align: middle; text-align: right;">0</td>
+                      </tr>
+                      <tr style="height: 100px;">
+                          <td style="vertical-align: bottom;">\(\pi\)</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td colspan="2"><canvas
+                    id="configuration-space"
+                    style="border: 1px solid #000000;"
+                  ></canvas>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" ></td>
+                  <td style="text-align: left; width: 100px;">-\(\pi\)</td>
+                  <td style="text-align: left; width: 100px;">0</td>
+                  <td style="text-align: left; width: 100px;">\(\pi\)</td>
+                </tr>
+                <tr>
+                    <td colspan="2" ></td>
+                    <td colspan="2" style="text-align: center;">\(\varphi_s\)</td>
+                  </tr>
+              </table>
+            
           </div>
         </div>
       </div>
 
+      <div style="height: 50px;">
+      </div>
       <div>
         <footer><small>&copy; Copyright 2019, jim conallen</small></footer>
       </div>
