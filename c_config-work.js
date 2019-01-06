@@ -11,12 +11,12 @@ function init() {
   canWorkspace.width = canvasWidth;
   canWorkspace.height = canvasHeight;
   canWorkspace.addEventListener("click", clickedWorkspace, false);
-
   ctxWorkspace = canWorkspace.getContext("2d");
 
   canConfiguration = document.getElementById("configuration-space");
   canConfiguration.width = 300;
   canConfiguration.height = 300;
+  canConfiguration.addEventListener("click", clickedConfigurationSpace, false);
   ctxConfiguration = canConfiguration.getContext("2d");
 
   canShoulder = document.getElementById("shoulderControl");
@@ -260,6 +260,19 @@ function clickedWorkspace(event) {
   }
 
   // update 
+  drawWorkspace();
+  drawConfiguration();
+}
+
+// clicking in configuration space will reposition robot arm in 
+// workspace.
+function clickedConfigurationSpace(event){
+  var rect = canConfiguration.getBoundingClientRect();
+  var cx1 = event.clientX - rect.left;
+  var cy1 = event.clientY - rect.top;
+
+  shoulderAngle = cx1 * 2 * Math.PI / rect.width - Math.PI;
+  elbowAngle = cy1 * 2 * Math.PI / rect.height - Math.PI;
   drawWorkspace();
   drawConfiguration();
 }
