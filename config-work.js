@@ -5,31 +5,31 @@ Robot manipulation functions (mostly)
 */
 
 // compute the next position of the robot arm.  Update the global vars.
-function updateWorkspace(){
+function updateWorkspace() {
   elbowAngle = elbowAngle + deltaElbowDirection * deltaElbowAngle;
-  if (elbowAngle > Math.PI ) {
-    elbowAngle = elbowAngle - 2*Math.PI;
-  } else if( elbowAngle < -Math.PI ) {
-    elbowAngle = elbowAngle + 2*Math.PI;
+  if (elbowAngle > Math.PI) {
+    elbowAngle = elbowAngle - 2 * Math.PI;
+  } else if (elbowAngle < -Math.PI) {
+    elbowAngle = elbowAngle + 2 * Math.PI;
   }
 
   shoulderAngle = shoulderAngle + deltaShoulderDirection * deltaShoulderAngle;
   if (shoulderAngle > Math.PI) {
-    shoulderAngle = shoulderAngle - 2*Math.PI;
-  } else if( shoulderAngle < -Math.PI ) {
-    shoulderAngle = shoulderAngle + 2*Math.PI;
+    shoulderAngle = shoulderAngle - 2 * Math.PI;
+  } else if (shoulderAngle < -Math.PI) {
+    shoulderAngle = shoulderAngle + 2 * Math.PI;
   }
 }
 
 // returns a line segment in wrold units that represents
-// the arm starting at (wx, wy) with length and angle from 
+// the arm starting at (wx, wy) with length and angle from
 // the positive horizontal
 function arm(x1, y1, theta, len) {
   var dx = Math.cos(theta) * len;
   var dy = Math.sin(theta) * len;
   var x2 = x1 + dx;
   var y2 = y1 + dy;
-  return { "x1": x1, "y1": y1, "x2": x1 + dx, "y2": y1 + dy };
+  return { x1: x1, y1: y1, x2: x1 + dx, y2: y1 + dy };
 }
 
 // returns true iff the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
@@ -54,7 +54,7 @@ function hitAnyBlock(segment) {
   return false;
 }
 
-// returns true if the line segment intersects with any of the 
+// returns true if the line segment intersects with any of the
 // box's line segments.
 function hitBlock(segment, b) {
   var block = blocks[b];
@@ -101,7 +101,7 @@ function hitBlock(segment, b) {
   return bottom | top | left | right;
 }
 
-// returns true if the line segment intersects with any of the 
+// returns true if the line segment intersects with any of the
 // the workspace's walls, floor or ceiling.
 function hitWall(segment) {
   var left = segment.x2 <= 0;

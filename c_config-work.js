@@ -45,9 +45,8 @@ function init() {
   drawConfiguration();
 }
 
-
 // begins animation by requesting a animation frame, which calls the animate function
-// at regiular intervals.  The handle is kept in the globalId var so that it can be stopped 
+// at regiular intervals.  The handle is kept in the globalId var so that it can be stopped
 // by the user via the stop button.
 function start() {
   globalID = requestAnimationFrame(animate);
@@ -59,20 +58,19 @@ function stop() {
   drawConfiguration();
 }
 
-// update the workspace view with the next pose of robot 
+// update the workspace view with the next pose of robot
 // in the workspace view
 function animate() {
   drawNext();
   globalID = requestAnimationFrame(animate);
 }
 
-
-// resets the arm variables (joint and lengths), and removes 
+// resets the arm variables (joint and lengths), and removes
 // any obstacles from the workspace.
 function reset() {
   shoulderAngle = 0;
   shoulderLength = 2;
-  deltaShoulderAngle = 0.01; 
+  deltaShoulderAngle = 0.01;
   deltaShoulderDirection = 1;
 
   elbowAngle = 0;
@@ -86,8 +84,7 @@ function reset() {
   drawConfiguration();
 }
 
-
-// reset the length of the base segment.  This means 
+// reset the length of the base segment.  This means
 // updating the global var (baseLength) and re-draw it
 // in the workpace.
 function adjustBaseLength(event) {
@@ -101,7 +98,7 @@ function adjustBaseLength(event) {
 }
 
 // change the length of the shoulder segment of the arm
-// get the value from the control canvas then redraw the 
+// get the value from the control canvas then redraw the
 // the arm and update the configuration view
 function adjustShoulderLength(event) {
   var canvas = document.getElementById("shoulderLenCanvas");
@@ -114,7 +111,7 @@ function adjustShoulderLength(event) {
 }
 
 // change the length of the elbow segment of the arm
-// get the value from the control canvas then redraw the 
+// get the value from the control canvas then redraw the
 // the arm and update the configuration view
 function adjustElbowLength(event) {
   var canvas = document.getElementById("elbowLenCanvas");
@@ -127,10 +124,10 @@ function adjustElbowLength(event) {
 }
 
 // draw the all the controls (shoulder and elbow joint, and the three length
-// controls for base, shoulder, and elbow segment 
+// controls for base, shoulder, and elbow segment
 function drawControls() {
-  drawControl(canShoulder, shoulderAngle, "blue", "Shoulder");
-  drawControl(canElbow, elbowAngle, "green", "Elbow");
+  drawControl(canShoulder, shoulderAngle, shoulderColor, "Shoulder");
+  drawControl(canElbow, elbowAngle, elbowColor, "Elbow");
 
   // now the length bars
   var elm = document.getElementById("baseLenField");
@@ -150,7 +147,7 @@ function drawControls() {
   ctx = canvas.getContext("2d");
   ctx.save();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "blue";
+  ctx.fillStyle = shoulderColor;
   w = ((shoulderLength - 1) * canvas.width) / 5;
   ctx.fillRect(0, 0, w, canvas.height);
   ctx.restore();
@@ -161,22 +158,22 @@ function drawControls() {
   ctx = canvas.getContext("2d");
   ctx.save();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "green";
+  ctx.fillStyle = elbowColor;
   w = ((elbowLength - 1) * canvas.width) / 5;
   ctx.fillRect(0, 0, w, canvas.height);
   ctx.restore();
 }
 
-// convert absolute mouse click location to relative coordinates. 
+// convert absolute mouse click location to relative coordinates.
 // Returns a JSON object with the (x,y) coordinates
 // in pixels relative to the client area of the canvas.
 function getMousePos(canvas, event) {
   var rect = canvas.getBoundingClientRect();
-  return { "x": event.clientX - rect.left, "y": event.clientY - rect.top };
+  return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
 // handle click event in one of the angle controls.
-// This function violates one design goal, by embedding the name 
+// This function violates one design goal, by embedding the name
 // of the controls in this function.  Hopefully future refactoring will
 // get rid of this (without just simply duplicating the code for each contol).
 function controlClick(event) {
@@ -196,10 +193,10 @@ function controlClick(event) {
 
   if (canvas.id == "shoulderControl") {
     shoulderAngle = theta;
-    drawControl(canvas, theta, "blue", "Shoulder");
+    drawControl(canvas, theta, shoulderColor, "Shoulder");
   } else if (canvas.id == "elbowControl") {
     elbowAngle = theta;
-    drawControl(canvas, theta, "green", "Elbow");
+    drawControl(canvas, theta, elbowColor, "Elbow");
   }
   drawWorkspace();
   drawConfiguration();
@@ -232,7 +229,7 @@ function drawControl(canvas, theta, color, name) {
   ctx.restore();
 }
 
-// user clicked in workspace.  This will place a block (obstacle) in the 
+// user clicked in workspace.  This will place a block (obstacle) in the
 // grid location that the user clicked in.
 function clickedWorkspace(event) {
   var rect = canWorkspace.getBoundingClientRect();
@@ -243,13 +240,13 @@ function clickedWorkspace(event) {
 
   var block = drawBlock(wx1, wy1);
   // now remember it in the world model
-  var block = { "x1": wx1, "y1": wy1, "x2": wx1 + 1, "y2": wy1 + 1 };
+  var block = { x1: wx1, y1: wy1, x2: wx1 + 1, y2: wy1 + 1 };
 
   var l = blocks.length;
   var i;
   for (i = 0; i < l; i++) {
     var b = blocks[i];
-    if (wx1 == b.x1 && (wx1+1) == b.x2 && wy1 == b.y1 && (wy1+1) == b.y2) {
+    if (wx1 == b.x1 && wx1 + 1 == b.x2 && wy1 == b.y1 && wy1 + 1 == b.y2) {
       // already here - remove it (toggle effect)
       blocks.splice(i, 1);
       break;
@@ -259,30 +256,30 @@ function clickedWorkspace(event) {
     blocks.push(block);
   }
 
-  // update 
+  // update
   drawWorkspace();
   drawConfiguration();
 }
 
-// clicking in configuration space will reposition robot arm in 
+// clicking in configuration space will reposition robot arm in
 // workspace.
-function clickedConfigurationSpace(event){
+function clickedConfigurationSpace(event) {
   var rect = canConfiguration.getBoundingClientRect();
   var cx1 = event.clientX - rect.left;
   var cy1 = event.clientY - rect.top;
 
-  shoulderAngle = cx1 * 2 * Math.PI / rect.width - Math.PI;
-  elbowAngle = cy1 * 2 * Math.PI / rect.height - Math.PI;
+  shoulderAngle = (cx1 * 2 * Math.PI) / rect.width - Math.PI;
+  elbowAngle = (cy1 * 2 * Math.PI) / rect.height - Math.PI;
   drawWorkspace();
   drawConfiguration();
 }
 
-// convert world x coordinates to canvas coordinates (pixels) 
+// convert world x coordinates to canvas coordinates (pixels)
 function _cx(wrX) {
   return (wrX * canvasWidth) / worldWidth;
 }
 
-// convert world y coordinates to canvas coordinates (pixels) 
+// convert world y coordinates to canvas coordinates (pixels)
 function _cy(wrY) {
   return canvasHeight - (wrY * canvasHeight) / worldHeight;
 }
@@ -322,7 +319,6 @@ function circle(wx, wy, wr, color) {
   ctxWorkspace.restore();
 }
 
-
 // draws one segment of an arm (and puts a red dot at the end)
 function drawArmSegment(a, color) {
   var cx1 = _cx(a.x1);
@@ -348,11 +344,11 @@ function drawArmSegment(a, color) {
 
 // draws the frame in the workspace animation.
 function drawNext() {
-  updateWorkspace();  // update the current state of the robot arm.
-  drawWorkspace();    // redraw
+  updateWorkspace(); // update the current state of the robot arm.
+  drawWorkspace(); // redraw
 }
 
-// draws the workspace view based on the current robot pose and 
+// draws the workspace view based on the current robot pose and
 // obstacles.
 function drawWorkspace() {
   ctxWorkspace.clearRect(0, 0, canWorkspace.width, canWorkspace.height);
@@ -380,9 +376,9 @@ function drawWorkspace() {
     sh = arm(bs.x2, bs.y2, shoulderAngle, shoulderLength);
   }
 
-  drawArmSegment(bs, "black");
-  drawArmSegment(sh, "blue");
-  drawArmSegment(el, "green");
+  drawArmSegment(bs, baseColor);
+  drawArmSegment(sh, shoulderColor);
+  drawArmSegment(el, elbowColor);
   drawControls();
 }
 
@@ -398,17 +394,17 @@ function drawConfiguration() {
         ((y - canConfiguration.height / 2) * 2 * Math.PI) /
         canConfiguration.height;
 
-      var bs = arm(worldWidth / 2, 0, Math.PI / 2, baseLength, "black");
-      var sh = arm(bs.x2, bs.y2, s, shoulderLength, "blue");
-      var el = arm(sh.x2, sh.y2, e, elbowLength, "green");
+      var bs = arm(worldWidth / 2, 0, Math.PI / 2, baseLength, baseColor);
+      var sh = arm(bs.x2, bs.y2, s, shoulderLength, shoulderColor);
+      var el = arm(sh.x2, sh.y2, e, elbowLength, elbowColor);
 
       var color = "lightgray";
       if (hitWall(el)) {
-        color = "black";
+        color = baseColor;
       } else if (hitAnyBlock(sh)) {
-        color = "blue";
+        color = shoulderColor;
       } else if (hitAnyBlock(el)) {
-        color = "green";
+        color = elbowColor;
       }
 
       ctxConfiguration.save();
@@ -425,13 +421,23 @@ function drawConfiguration() {
   var y = (canConfiguration.height * (elbowAngle + Math.PI)) / (2 * Math.PI);
   // var x = canConfiguration.width * ((shoulderAngle-Math.PI) / Math.PI + 1) / 2 ;
   // var y = canConfiguration.height * ((elbowAngle-Math.PI) / Math.PI + 1 ) / 2;
-  console.log('s='+shoulderAngle.toFixed(1)+' e='+elbowAngle.toFixed(1)+' ('+x+','+y+')');
+  console.log(
+    "s=" +
+      shoulderAngle.toFixed(1) +
+      " e=" +
+      elbowAngle.toFixed(1) +
+      " (" +
+      x +
+      "," +
+      y +
+      ")"
+  );
 
   ctxConfiguration.strokeStyle = "red";
-  ctxConfiguration.moveTo(x-5, y);
-  ctxConfiguration.lineTo(x+5, y);
-  ctxConfiguration.moveTo(x, y-5);
-  ctxConfiguration.lineTo(x, y+5);
+  ctxConfiguration.moveTo(x - 5, y);
+  ctxConfiguration.lineTo(x + 5, y);
+  ctxConfiguration.moveTo(x, y - 5);
+  ctxConfiguration.lineTo(x, y + 5);
   ctxConfiguration.stroke();
   ctxConfiguration.restore();
 }

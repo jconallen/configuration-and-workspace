@@ -33,38 +33,38 @@
             the robot's configuration can be described by a four-dimensional
             coordinate: \((x_e, y_e)\) for the location of the elbow relative to
             the environment and \((x_g, y_g)\) for the location of the gripper,
-            or end of the elbow segment.  Both sets of coordinates are necessary 
+            or end of the elbow segment. Both sets of coordinates are necessary
             because for anyt given \((x_g, y_g)\), there can be as many as two
             possible values for \((x_e, y_e)\).
           </p>
           <p>
             Not all workspace coordinates are actually attainable (even without
             obstacles). For example in the default configuration the arm is
-            can't move throught the floor of the box, even though its reach could 
-            extend beyond that. When obstacles are added to workspace world, the 
-            arm has even more areas where it cannot reach.
+            can't move throught the floor of the box, even though its reach
+            could extend beyond that. When obstacles are added to workspace
+            world, the arm has even more areas where it cannot reach.
           </p>
           <p>
             When planning motions for the robot it is easier to use a
             <b>configuration space</b> representation. In this representation
             the state space is continuous. We represent the state with two
             values (angular); elbow \(\varphi_e\), and shoulder \(\varphi_s\).
-            The configuration space range is is from \(-\pi\) to \(+\pi\).  When
-            the angle exceeds either of these values it is reset.  For example 
-            if \(\varphi_s=\pi\) and we added \(a\) to it, the value becomes
+            The configuration space range is is from \(-\pi\) to \(+\pi\). When
+            the angle exceeds either of these values it is reset. For example if
+            \(\varphi_s=\pi\) and we added \(a\) to it, the value becomes
             \(\varphi_s=\pi+a=-\pi+a \).
           </p>
           <p>
             This visualization allows you to add obstacles to the
             <b>workspace</b> representation, by simply clicking on a cell in the
-            workspace (toggling it dark gray). The
-            <b>configuration space</b> is updated with regions that the arm can
-            not access. Black areas indicate that the arm is up against the
-            boundaries of the containing box. Blue indicates that the shoulder
-            segment is prevented from orienting itself at that angle
-            (\(\varphi_s\)). Green indicates that the elbow segment of the arm
-            is prevented from orienting itself at that angle (\(\varphi_e\)). 
-            A small red cross indicates the current position of the robot gripper.
+            workspace (toggling it dark gray). The <b>configuration space</b> is
+            updated with regions that the arm can not access. Black areas
+            indicate that the arm is up against the boundaries of the containing
+            box. Blue indicates that the shoulder segment is prevented from
+            orienting itself at that angle (\(\varphi_s\)). Green indicates that
+            the elbow segment of the arm is prevented from orienting itself at
+            that angle (\(\varphi_e\)). A small red cross indicates the current
+            position of the robot gripper.
           </p>
           <p>
             You can manually position the two joints with the shoulder and elbow
@@ -73,46 +73,68 @@
             on those controls.
           </p>
           <p>
-            Clicking in the <b>configuration space</b> will immediately position 
-            the robot in the <b>workspace</b> (not subject to boundaries or obstacles).
+            Clicking in the <b>configuration space</b> will immediately position
+            the robot in the <b>workspace</b> (not subject to boundaries or
+            obstacles).
           </p>
           <p>
             You can animate movement of the arm with the Start and Stop buttons.
             This animation is not garanteed to reach all possible
             configurations. Depending on how the obstacles are arranged it may
-            not be possible to the arm to get on either side of it. So the initial
-            position of the arm can significantly affect the ability of the
-            animation to reach a given configuration.  It is also possible to get 
-            the arm "stuck", such that it doesn't move any more.  
+            not be possible to the arm to get on either side of it. So the
+            initial position of the arm can significantly affect the ability of
+            the animation to reach a given configuration. It is also possible to
+            get the arm "stuck", such that it doesn't move any more.
           </p>
         </div>
       </div>
 
       <div class="row">
         <h3>Workspace</h3>
-        <div class="col-md-4"  style="min-width: 400px;">
+        <div class="col-md-4" style="min-width: 400px;">
           <div>
             <table>
               <tr>
-                <td style="text-align: left;">\(y\)<td>
+                <td style="text-align: left;">\(y\)</td>
+                <td></td>
                 <td>
                   <table>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">10</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">9</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">8</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">7</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">6</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">5</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">4</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">3</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">2</td></tr>
-                    <tr style="height: 30px;"><td style="vertical-align: top;">1</td></tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">10</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">9</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">8</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">7</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">6</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">5</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">4</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">3</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">2</td>
+                    </tr>
+                    <tr style="height: 30px;">
+                      <td style="vertical-align: top;">1</td>
+                    </tr>
                   </table>
                 </td>
-                <td colspan="12">            
+                <td colspan="12">
                   <canvas id="workspace" style="border:1px solid #000000;">
-                    This text is displayed if your browser does not support HTML5
-                    Canvas.
+                    This text is displayed if your browser does not support
+                    HTML5 Canvas.
                   </canvas>
                 </td>
               </tr>
@@ -132,14 +154,9 @@
                 <td style="text-align: right; width: 30px;">12</td>
               </tr>
               <tr>
-                  <td colspan="15" style="text-align: center;">\(x\)</td>
+                <td colspan="15" style="text-align: center;">\(x\)</td>
               </tr>
-
             </table>
-
-
-
-
           </div>
         </div>
         <div class="col-md-4">
@@ -149,7 +166,7 @@
           ></canvas>
           <canvas id="elbowControl" style="border:1px solid #000000;"></canvas>
           <p>
-            Base Length: <span id="baseLenField">3.0</span></br>
+            Base Length: <span id="baseLenField">3.0</span><br />
             <canvas
               id="baseLenCanvas"
               style="border:1px solid #000000;"
@@ -157,7 +174,7 @@
             ></canvas>
           </p>
           <p>
-            Shoulder Length: <span id="shoulderLenField">3.0</span></br>
+            Shoulder Length: <span id="shoulderLenField">3.0</span><br />
             <canvas
               id="shoulderLenCanvas"
               style="border:1px solid #000000;"
@@ -165,7 +182,7 @@
             ></canvas>
           </p>
           <p>
-            Elbow Length: <span id="elbowLenField" Control>3.0</span></br>
+            Elbow Length: <span id="elbowLenField" Control>3.0</span><br />
             <canvas
               id="elbowLenCanvas"
               style="border:1px solid #000000;"
@@ -190,45 +207,46 @@
         <div class="col-md-6">
           <div>
             <table>
-                <tr>
-                  <td>\(\varphi_e\)</td>
-                  <td>
-                    <table>
-                      <tr style="height: 100px;">
-                        <td style="vertical-align: top;">-\(\pi\)</td>
-                      </tr>
-                      <tr style="height: 100px;">
-                          <td style="vertical-align: middle; text-align: right;">0</td>
-                      </tr>
-                      <tr style="height: 100px;">
-                          <td style="vertical-align: bottom;">\(\pi\)</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td colspan="2"><canvas
+              <tr>
+                <td>\(\varphi_e\)</td>
+                <td>
+                  <table>
+                    <tr style="height: 100px;">
+                      <td style="vertical-align: top;">-\(\pi\)</td>
+                    </tr>
+                    <tr style="height: 100px;">
+                      <td style="vertical-align: middle; text-align: right;">
+                        0
+                      </td>
+                    </tr>
+                    <tr style="height: 100px;">
+                      <td style="vertical-align: bottom;">\(\pi\)</td>
+                    </tr>
+                  </table>
+                </td>
+                <td colspan="2">
+                  <canvas
                     id="configuration-space"
                     style="border: 1px solid #000000;"
                   ></canvas>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" ></td>
-                  <td style="text-align: left; width: 100px;">-\(\pi\)</td>
-                  <td style="text-align: left; width: 100px;">0</td>
-                  <td style="text-align: left; width: 100px;">\(\pi\)</td>
-                </tr>
-                <tr>
-                    <td colspan="2" ></td>
-                    <td colspan="2" style="text-align: center;">\(\varphi_s\)</td>
-                  </tr>
-              </table>
-            
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2"></td>
+                <td style="text-align: left; width: 100px;">-\(\pi\)</td>
+                <td style="text-align: left; width: 100px;">0</td>
+                <td style="text-align: left; width: 100px;">\(\pi\)</td>
+              </tr>
+              <tr>
+                <td colspan="2"></td>
+                <td colspan="2" style="text-align: center;">\(\varphi_s\)</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
 
-      <div style="height: 50px;">
-      </div>
+      <div style="height: 50px;"></div>
       <div>
         <footer><small>&copy; Copyright 2019, jim conallen</small></footer>
       </div>
